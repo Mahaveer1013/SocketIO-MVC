@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Leave Requests</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <div class="container mt-4">
+        <h2>Employee Leave Requests</h2>
+        <table class="table table-striped table-bordered" id='leave_table'>
+            <thead class="thead-dark">
+                <tr>
+                    <th>Emp ID</th>
+                    <th>Name</th>
+                    <th>Reason</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Status</th>
+                    <th>HOD Status</th>
+                    <th>Approved By</th>
+                    <th>HR Status</th>
+                    <th>Action</th>
+                </tr>
+                {% for leave_permission in leave_permission %}
+                    <tr>
+                        <td>{{leave_permission.emp_id}}</td>
+                        <td>{{leave_permission.emp_name}}</td>
+                        <td>{{leave_permission.reason}}</td>
+                        <td>{{leave_permission.from_date}}</td>
+                        <td>{{leave_permission.to_date}}</td>
+                        <td>{{leave_permission.status}}</td>
+                        <td>{{leave_permission.hod_approval}}</td>
+                        <td>{{leave_permission.approved_by}}</td>
+                        <td>{{leave_permission.hr_approval}}</td>
+                        <td><button class="btn btn-sm btn-primary" name='approve' onclick="Leave_Approve({{leave_permission.emp_id}})" id='approve'>Approve</button>
+                        <button class="btn btn-sm btn-danger" name='decline' onclick="Leave_Decline({{leave_permission.emp_id}})" id='decline'>Decline</button></td>
+                       
+                    </tr>
+                {% endfor %}
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+        <script>
+            var socket = io();
+            socket.on('leave', function (leave_permission) {
+                console.log('Received leave_permission:', leave_permission.emp_id);
+                var tbody = document.getElementById('leave_table');
+                tbody.innerHTML += `
+                    <tr>
+                    <td>${leave_permission.emp_id}</td>
+                    <td>${leave_permission.emp_name}</td>
+                    <td>${leave_permission.reason}</td>
+                    <td>${leave_permission.from_date}</td>
+                    <td>${leave_permission.to_date}</td>
+                    <td>${leave_permission.status}</td>
+                    <td>${leave_permission.hod_approval}</td>
+                    <td>${leave_permission.approved_by}</td>
+                    <td>${leave_permission.hr_approval}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" name='approve' onclick="Leave_Approve(${leave_permission.emp_id})" id='approve'>Approve</button>
+                        <button class="btn btn-sm btn-danger" name='decline' onclick="Leave_Decline(${leave_permission.emp_id})" id='decline'>Decline</button>
+                    </td>
+                    </tr>
+                `;
+            });
+        </script>
+        <script>
+            function Leave_Approve(userId){
+                fetch("/leave_approve", {
+                  method: "POST",
+                  body: JSON.stringify({ userId: userId }),
+                }).then((_res) => {
+                  window.location.href = "/request_disp";
+                  
+                });
+            } 
+              function Leave_Decline(userId){
+                fetch("/leave_decline", {
+                  method: "POST",
+                  body: JSON.stringify({ userId: userId }),
+                }).then((_res) => {
+                  window.location.href = "/request_disp";
+                  
+                });
+            }
+              socket.on('leave_hr_approval_update', function(data) {
+                const userId = data.userId;
+                const hrApproval = data.hr_approval;
+        
+                document.getElementById('hr-approval-' + userId).textContent = hrApproval;
+            });
+        </script>
+        
+    </div>
+    <div class="container mt-4">
+        <h2>Employee Late Requests</h2>
+        <table class="table table-striped table-bordered" id='late_table'>
+            <thead class="thead-dark">
+                <tr>
+                    <th>Emp ID</th>
+                    <th>Name</th>
+                    <th>Reason</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Status</th>
+                    <th>HOD Status</th>
+                    <th>Approved By</th>
+                    <th>HR Status</th>
+                    <th>Action</th>
+                </tr>
+                {% for late_permission in late_permission %}
+                    <tr>
+                        <td>{{late_permission.emp_id}}</td>
+                        <td>{{late_permission.emp_name}}</td>
+                        <td>{{late_permission.reason}}</td>
+                        <td>{{late_permission.from_time}}</td>
+                        <td>{{late_permission.to_time}}</td>
+                        <td>{{late_permission.status}}</td>
+                        <td>{{late_permission.hod_approval}}</td>
+                        <td>{{late_permission.approved_by}}</td>
+                        <td>{{late_permission.hr_approval}}</td>
+                        <td><button class="btn btn-sm btn-primary" name='approve' onclick="Late_Approve({{late_permission.emp_id}})" id='approve'>Approve</button>
+                        <button class="btn btn-sm btn-danger" name='decline' onclick="Late_Decline({{late_permission.emp_id}})" id='decline'>Decline</button></td>
+                       
+                    </tr>
+                {% endfor %}
+            </thead>
+            <tbody>
+          
+            </tbody>
+        </table>
+
+        <script>
+            socket.on('late', function (late_permission) {
+                console.log('Received late_permission:', late_permission.emp_id);
+                var tbody = document.getElementById('late_table');
+                tbody.innerHTML += `
+                    <tr>
+                    <td>${late_permission.emp_id}</td>
+                    <td>${late_permission.emp_name}</td>
+                    <td>${late_permission.reason}</td>
+                    <td>${late_permission.from_time}</td>
+                    <td>${late_permission.to_time}</td>
+                    <td>${late_permission.status}</td>
+                    <td>${late_permission.hod_approval}</td>
+                    <td>${late_permission.approved_by}</td>
+                    <td>${late_permission.hr_approval}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" name='approve' onclick="Late_Approve(${late_permission.emp_id})" id='approve'>Approve</button>
+                        <button class="btn btn-sm btn-danger" name='decline' onclick="Late_Decline(${late_permission.emp_id})" id='decline'>Decline</button>
+                    </td>
+                    </tr>
+                `;
+            });
+        </script>
+    </div>
+
+    <script src="static/js/status.js"></script>
+    <script>
+        function Late_Approve(userId){
+            fetch("/late_approve", {
+              method: "POST",
+              body: JSON.stringify({ userId: userId }),
+            }).then((_res) => {
+              window.location.href = "/request_disp";
+              
+            });
+        } 
+          function Late_Decline(userId){
+            fetch("/late_decline", {
+              method: "POST",
+              body: JSON.stringify({ userId: userId }),
+            }).then((_res) => {
+              window.location.href = "/request_disp";
+              
+            });
+        }
+          socket.on('late_hr_approval_update', function(data) {
+            const userId = data.userId;
+            const hrApproval = data.hr_approval;
+    
+            document.getElementById('hr-approval-' + userId).textContent = hrApproval;
+        });
+    </script>
+</body>
+</html>

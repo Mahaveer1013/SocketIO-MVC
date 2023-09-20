@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask-SocketIO Example</title>
+</head>
+<body>
+    <h1>Welcome to Flask-SocketIO Example</h1>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        socket.on('connect', function() {
+            console.log('Connected to server');
+        });
+    </script>
+
+    <a href="{{url_for('late_form_page')}}">Late Form </a><br><br>
+    <a href="{{url_for('leave_form_page')}}">Leave Form </a><br><br><br><br>
+    <a href="{{url_for('request_disp')}}">Received Late Requests </a><br><br>
+
+    
+
+
+</body>
+</html>

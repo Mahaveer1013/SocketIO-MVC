@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Add Bootstrap CSS from CDN 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    -->
+    <link rel='stylesheet' href='static/css/late_disp.css'>
+</head>
+<body>
+    <div id="lateData">
+        <h2>Late Data</h2>
+        <table class="table table-bordered" id='result'>
+            <thead>
+                <tr>
+                    <th>Emp ID</th>
+                    <th>Emp Name</th>
+                    <th>Reason</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Status</th>
+                    <th>Hod status</th>
+                    <th>Approved By</td>
+                    <th>Hr status</th>
+                    <th>action</th>
+                </tr>
+                {% for late_permission in late_permission %}
+                    <tr>
+                        <td>{{late_permission.emp_id}}</td>
+                        <td>{{late_permission.emp_name}}</td>
+                        <td>{{late_permission.reason}}</td>
+                        <td>{{late_permission.from_time}}</td>
+                        <td>{{late_permission.to_time}}</td>
+                        <td>{{late_permission.status}}</td>
+                        <td>approve/decline</td>
+                        <td>Approved Hod Name</td>
+                        <td>{{late_permission.hr_approval}}</td>
+                        <td><button class="btn btn-primary" name='approve' onclick="Late_Approve({{late_permission.emp_id}})" id='approve'>Approve</button>
+                        <button class="btn btn-danger" name='decline' onclick="Late_Decline({{late_permission.emp_id}})" id='decline'>Decline</button></td>
+                       
+                    </tr>
+                {% endfor %}
+                    
+
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script> 
+var socket = io();
+
+socket.on('late', function (late_permission) {
+    console.log('Received late_permission:', late_permission);
+
+    // Assuming you have a tbody element to insert rows into
+    var tbody = document.querySelector('#result tbody');
+
+
+   // data.forEach(function (late_permission) {
+        var lateEntryRow = document.createElement('tr');
+        lateEntryRow.innerHTML = `
+            <td>${late_permission.emp_id}</td>
+            <td>${late_permission.emp_name}</td>
+            <td>${late_permission.reason}</td>
+            <td>${late_permission.from_time}</td>
+            <td>${late_permission.to_time}</td>
+            <td>${late_permission.status}</td>
+            <td>${late_permission.hod_approval}</td>
+            <td>${late_permission.approved_by}</td>
+            <td>${late_permission.hr_approval}</td>
+            <td>
+                <button class="btn btn-primary" name='approve' onclick="Late_Approve(${late_permission.emp_id})" id='approve'>Approve</button>
+                <button class="btn btn-danger" name='decline' onclick="Late_Decline(${late_permission.emp_id})" id='decline'>Decline</button>
+            </td>
+        `;
+        tbody.appendChild(lateEntryRow);
+    });
+
+</script>
+<script>
+    function Late_Approve(userId){
+        fetch("/late_approve", {
+          method: "POST",
+          body: JSON.stringify({ userId: userId }),
+        }).then((_res) => {
+          window.location.href = "/late_disp";
+          
+        });
+    } 
+      function Late_Decline(userId){
+        fetch("/late_decline", {
+          method: "POST",
+          body: JSON.stringify({ userId: userId }),
+        }).then((_res) => {
+          window.location.href = "/late_disp";
+          
+        });
+    }
+      socket.on('late_hr_approval_update', function(data) {
+        const userId = data.userId;
+        const hrApproval = data.hr_approval;
+
+        document.getElementById('hr-approval-' + userId).textContent = hrApproval;
+    });
+</script>
+</body>
+</html>

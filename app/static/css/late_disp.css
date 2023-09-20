@@ -1,0 +1,50 @@
+        /* Style for the table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        /* Style for table headers */
+        th {
+            background-color: #f2f2f2;
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Style for table rows */
+        tr {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Style for alternating rows (optional) */
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* Style for table cells */
+        td {
+            padding: 10px;
+        }
+
+        /* Style for red button */
+        #decline {
+            background-color: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Style for blue button */
+        #approve {
+            background-color: #0000ff;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }

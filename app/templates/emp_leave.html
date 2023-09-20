@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Form</title>  
+
+    <!-- Add Bootstrap CSS from CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <form name="leave_form" id="leave_form">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="emp_id" class="form-label">Emp ID :</label>
+                        <input type="text" class="form-control" id="emp_id">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="emp_name" class="form-label">Emp Name :</label>
+                        <input type="text" class="form-control" id="emp_name">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Reason :</label>
+                        <input type="text" class="form-control" id="reason">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="from_date" class="form-label">From Date :</label>
+                        <input type="date" class="form-control" id="from_date">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="to_date" class="form-label">To Date :</label>
+                        <input type="date" class="form-control" id="to_date">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="button" value='Submit' class="btn btn-primary submit" name="emp_leave">
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    
+    <script type="text/javascript" charset="utf-8">
+        var socket = io();
+        socket.on('connect', function() {
+            socket.emit('my event');
+        });
+    </script>
+    <script type="module">
+        import io from 'socket.io-client';
+        const socket = io();
+    </script>
+    <script>
+        var submitBtn = document.querySelector(".submit");
+        submitBtn.addEventListener('click',function(){
+            console.log("clicked")
+            const leaveDet ={}
+            var EmpId = document.getElementById("emp_id");
+            var EmpName = document.getElementById("emp_name");
+            var Reason = document.getElementById("reason");
+            var FromDate = document.getElementById("from_date");
+            var ToDate = document.getElementById("to_date");
+            leaveDet.emp_id = EmpId.value;
+            leaveDet.emp_name = EmpName.value;
+            leaveDet.reason = Reason.value;
+            leaveDet.from_date = FromDate.value;
+            leaveDet.to_date = ToDate.value;
+            console.log('Form Data:', leaveDet);
+            socket.emit('leave',leaveDet);
+            document.getElementById("leave_form").reset();
+        });
+    </script>
+</body>
+</html>
